@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import type { Tool } from "./types.js";
 
-const ALLOWED_COMMANDS = new Set(["npm", "git", "ls", "pwd"]);
+const ALLOWED_COMMANDS = new Set(["npm", "git", "ls", "pwd", "gcc"]);
 const execFileAsync = promisify(execFile);
 
 export const runShellCommandTool: Tool = {
