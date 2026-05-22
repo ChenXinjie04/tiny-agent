@@ -88,13 +88,31 @@
 - [ ] 增加评估入口，用固定任务集测试 agent 表现
 - [ ] 统计成功率、耗时、工具调用次数和失败原因
 
-### M11 — JD 对齐与作品展示
-- [ ] 编写 ARCHITECTURE.md，解释 Harness、Agent Loop、Tool Use、Memory、Planning
-- [ ] 编写 EVAL_REPORT.md，展示任务成功率、失败原因和改进效果
+### M11 — Subagent 与 Multi-Agent 探索
+- [ ] 设计 subagent 的最小抽象：角色、输入上下文、输出结果和权限边界
+- [ ] 增加只读型 `reviewer` subagent，用局部文件上下文执行代码审查
+- [ ] 增加只读型 `summarizer` subagent，用于压缩长对话或长文件内容
+- [ ] 设计 coordinator 调度流程：主 agent 分配任务，subagent 返回结构化结果
+- [ ] 记录 subagent 与主 agent 的上下文隔离策略，避免无关历史污染结果
+- [ ] 探索 multi-agent 执行日志，记录每个 agent 的输入、输出、耗时和失败原因
+- [ ] 明确当前版本边界：先支持顺序调度，不做并行执行和复杂 agent 协商
+
+### M12 — Filesystem MCP 接入
+- [ ] 理解 MCP client / server 的基本通信流程和工具发现机制
+- [ ] 接入一个只读 filesystem MCP server，用于列目录和读取项目文件
+- [ ] 将 MCP server 暴露的工具转换成模型可调用的 function-calling schema
+- [ ] 在 agent runtime 中增加 MCP tool provider，与现有内置工具共存
+- [ ] 保持写文件仍走本地 `write_file` 工具和确认流程，避免绕过安全机制
+- [ ] 记录 MCP 调用日志：server、tool name、arguments、result 和错误信息
+- [ ] 对比内置工具与 MCP 工具的边界、优势和复杂度
+
+### M13 — 项目展示与评估
+- [ ] 编写 ARCHITECTURE.md，解释 Agent Loop、Tool Use、Planning、Memory 和上下文管理设计
+- [ ] 编写 EVAL_REPORT.md，记录固定任务集的成功率、失败原因和改进效果
 - [ ] 准备 3 个真实任务 case study，展示 agent 如何完成实际开发任务
-- [ ] 在 README.md 增加岗位能力映射
-- [ ] 准备 3-5 分钟 demo 脚本
-- [ ] 说明设计取舍、风险控制和验证方法
+- [ ] 在 README.md 增加核心能力概览、运行截图和使用边界
+- [ ] 准备 3-5 分钟 demo 脚本，覆盖一次成功任务和一次失败恢复
+- [ ] 说明关键设计取舍、风险控制和验证方法
 
 ## 决策记录
 
