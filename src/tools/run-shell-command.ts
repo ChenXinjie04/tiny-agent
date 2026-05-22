@@ -1,8 +1,23 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { resolveInsideWorkspace } from "./path-safety.js";
 import type { Tool } from "./types.js";
 
-const ALLOWED_COMMANDS = new Set(["npm", "git", "ls", "pwd", "gcc"]);
+const BLOCKED_COMMANDS = new Set([
+  "rm",
+  "sudo",
+  "chmod",
+  "chown",
+  "mv",
+  "cp",
+  "curl",
+  "wget",
+  "ssh",
+  "scp",
+  "kill",
+  "pkill",
+]);
+
 const execFileAsync = promisify(execFile);
 
 export const runShellCommandTool: Tool = {
@@ -33,9 +48,7 @@ export const runShellCommandTool: Tool = {
     const command = readStringArg(args, "command");
     const commandArgs = readStringArrayArg(args, "args");
 
-    if (!ALLOWED_COMMANDS.has(command)) {
-      throw new Error(`Command not allowed: ${command}`);
-    }
+    validateShellCommand(command, commandArgs);
     const { stdout, stderr } = await execFileAsync(command, commandArgs, {
       cwd: process.cwd(),
     });
@@ -66,4 +79,14 @@ function readStringArrayArg(args: Record<string, unknown>, key: string): string[
   }
 
   return value;
+}
+
+function validateShellCommand(command: string, args: string[]): void {
+  if (BLOCKED_COMMANDS.has(command)) {
+    throw new Error(`Command is blocked: ${command}`);
+  }
+
+  if (command.includes("/") || command.includes("\\")) {
+    resolveInsideWorkspace(command);
+  }
 }
