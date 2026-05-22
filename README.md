@@ -1,4 +1,4 @@
-# coding-agent
+# tiny-agent
 
 A terminal coding agent written in TypeScript and powered by the DeepSeek API.
 
