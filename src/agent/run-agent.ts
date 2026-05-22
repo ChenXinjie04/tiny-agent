@@ -14,6 +14,7 @@ export async function runAgent(
   client: OpenAI,
   messages: AgentMessage[],
   onText: (text: string) => void,
+  onToolResult: (name: string, result: string) => void,
 ): Promise<void> {
   let finalText = "";
   while (true) {
@@ -82,6 +83,8 @@ export async function runAgent(
       const tool = getTool(toolCall.name);
       const args = JSON.parse(toolCall.arguments) as Record<string, unknown>;
       const result = await tool.run(args);
+
+      onToolResult(toolCall.name, result);
 
       messages.push({
         role: "tool",

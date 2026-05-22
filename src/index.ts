@@ -21,9 +21,20 @@ while (true) {
     continue;
   }
   messages.push({ role: "user", content: input })
-  await runAgent(client, messages, (text) => {
-    process.stdout.write(text);
-  });
+  await runAgent(client, messages, (text) => process.stdout.write(text), printToolResult,
+  );
   process.stdout.write("\n");
 }
 rl.close();
+
+function printToolResult(name: string, result: string) {
+  process.stdout.write(`\n`);
+  process.stdout.write(`┌─ tool: ${name}\n`);
+  process.stdout.write(`│\n`);
+
+  for (const line of result.split("\n")) {
+    process.stdout.write(`│ ${line}\n`);
+  }
+
+  process.stdout.write(`└─ done\n\n`);
+}
