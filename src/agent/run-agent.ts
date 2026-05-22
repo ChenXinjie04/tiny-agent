@@ -21,6 +21,10 @@ export async function runAgent(client: OpenAI, userInput: string): Promise<strin
     }
 
     for (const toolCall of message.tool_calls) {
+      if (toolCall.type !== "function") {
+        throw new Error(`Unsupported tool call type: ${toolCall.type}`);
+      }
+
       const tool = getTool(toolCall.function.name);
       const args = JSON.parse(toolCall.function.arguments) as Record<string, unknown>;
       const result = await tool.run(args);
