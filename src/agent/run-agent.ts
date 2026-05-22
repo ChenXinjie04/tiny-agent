@@ -2,10 +2,9 @@ import type OpenAI from "openai";
 import { DEFAULT_MODEL } from "../llm/client.js";
 import { getTool, toolSpecs } from "../tools/index.js";
 
-export async function runAgent(client: OpenAI, userInput: string): Promise<string> {
-  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-    { role: "user", content: userInput },
-  ];
+export type AgentMessage = OpenAI.Chat.Completions.ChatCompletionMessageParam;
+
+export async function runAgent(client: OpenAI, messages: AgentMessage[]): Promise<string> {
   while (true) {
     const res = await client.chat.completions.create({
       model: DEFAULT_MODEL,
