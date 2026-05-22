@@ -4,7 +4,7 @@ import OpenAI from "openai";
 export const DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 
 // Default chat model (V3). Supports function calling.
-export const DEFAULT_MODEL = "deepseek-chat";
+export const DEFAULT_MODEL = "deepseek-v4-pro";
 
 /**
  * Build a DeepSeek client from the DEEPSEEK_API_KEY environment variable.
