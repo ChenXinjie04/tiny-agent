@@ -21,8 +21,9 @@ while (true) {
     continue;
   }
   messages.push({ role: "user", content: input })
-  const answer = await runAgent(client, messages);
-
-  console.log("AI:", answer);
+  await runAgent(client, messages, (text) => {
+    process.stdout.write(text);
+  });
+  process.stdout.write("\n");
 }
 rl.close();
