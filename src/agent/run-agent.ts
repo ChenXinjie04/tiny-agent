@@ -1,5 +1,9 @@
 import type OpenAI from "openai";
-import { DEFAULT_MODEL } from "../llm/client.js";
+import {
+  DEEPSEEK_REASONING_EFFORT,
+  DEEPSEEK_THINKING_TYPE,
+  DEFAULT_MODEL,
+} from "../llm/client.js";
 import { getTool, toolSpecs } from "../tools/index.js";
 import { SYSTEM_PROMPT } from "./system-prompt.js";
 
@@ -11,6 +15,19 @@ type StreamToolCall = {
   arguments: string;
 };
 
+type DeepSeekChatRequestExtra = {
+  reasoning_effort?: string;
+  extra_body?: {
+    thinking?: {
+      type: string;
+    };
+  };
+};
+
+type DeepSeekAssistantMessage = OpenAI.Chat.Completions.ChatCompletionAssistantMessageParam & {
+  reasoning_content?: string;
+};
+
 export async function runAgent(
   client: OpenAI,
   messages: AgentMessage[],
@@ -18,7 +35,6 @@ export async function runAgent(
   onToolResult: (name: string, result: string) => void,
   shouldConfirmTool: (name: string, args: Record<string, unknown>) => Promise<boolean>,
 ): Promise<void> {
-  let finalText = "";
   if (messages.length === 0) {
     messages.push({
       role: "system",
@@ -26,16 +42,32 @@ export async function runAgent(
     });
   }
   while (true) {
+    let finalText = "";
+    let reasoningContent = "";
     const stream = await client.chat.completions.create({
       model: DEFAULT_MODEL,
       messages,
       tools: toolSpecs,
       stream: true,
-    });
+      reasoning_effort: DEEPSEEK_REASONING_EFFORT,
+      extra_body: {
+        thinking: {
+          type: DEEPSEEK_THINKING_TYPE,
+        },
+      },
+    } as OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming & DeepSeekChatRequestExtra);
 
     const toolCalls = new Map<number, StreamToolCall>();
     for await (const chunk of stream) {
       const delta = chunk.choices[0]?.delta;
+
+      const deepSeekDelta = delta as typeof delta & {
+        reasoning_content?: string;
+      };
+
+      if (deepSeekDelta?.reasoning_content) {
+        reasoningContent += deepSeekDelta.reasoning_content;
+      }
 
       if (delta?.content) {
         finalText += delta.content;
@@ -67,16 +99,22 @@ export async function runAgent(
     }
 
     if (toolCalls.size === 0) {
-      messages.push({
+      const assistantMessage: DeepSeekAssistantMessage = {
         role: "assistant",
         content: finalText,
-      });
+      };
+
+      if (reasoningContent.length > 0) {
+        assistantMessage.reasoning_content = reasoningContent;
+      }
+
+      messages.push(assistantMessage);
       return;
     }
 
-    messages.push({
+    const assistantMessage: DeepSeekAssistantMessage = {
       role: "assistant",
-      content: null,
+      content: finalText,
       tool_calls: [...toolCalls.values()].map((toolCall) => ({
         id: toolCall.id,
         type: "function",
@@ -85,7 +123,13 @@ export async function runAgent(
           arguments: toolCall.arguments,
         },
       })),
-    });
+    };
+
+    if (reasoningContent.length > 0) {
+      assistantMessage.reasoning_content = reasoningContent;
+    }
+
+    messages.push(assistantMessage);
 
     for (const toolCall of toolCalls.values()) {
       let args: Record<string, unknown>;
