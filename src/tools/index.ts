@@ -1,8 +1,9 @@
 import type { Tool } from "./types.js";
 import { listDirTool } from "./list-dir.js";
 import { readFileTool } from "./read-file.js"
+import { writeFileTool } from "./write-file.js"
 
-export const tools: Tool[] = [listDirTool, readFileTool];
+export const tools: Tool[] = [listDirTool, readFileTool, writeFileTool];
 export const toolSpecs = tools.map((tool) => tool.spec);
 const toolMap = new Map(tools.map((tool) => {
   if (tool.spec.type !== "function") {
