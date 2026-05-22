@@ -2,8 +2,8 @@
 
 ## 当前状态
 
-📍 **M4 交互式终端体验** —— 已完成 REPL 与对话历史维护。
-下一步：实现 **流式输出（streaming）**，让模型回复边生成边显示。
+📍 **M4 交互式终端体验** —— 已完成 REPL、对话历史维护与流式输出。
+下一步：进入 **M5 打磨**，优先补 system prompt、错误处理与工具调用展示体验。
 
 ## 里程碑路线图
 
@@ -16,8 +16,10 @@
 - [x] 配置 TypeScript（tsconfig.json，strict 模式）
 - [x] 安装依赖（`openai`、`dotenv`、`typescript`、`tsx`、`@types/node`）
 - [x] 配置 `.gitignore`（含 `node_modules/`、`.env`、`dist/`）
+- [x] 将 `AGENTS.md`、`CLAUDE.md` 加入 `.gitignore`
 - [x] 创建 `.env.example` 示例模板
 - [x] 配置 `npm run dev` 脚本（含 `build`、`start`）
+- [x] 创建 README.md，说明项目定位、运行方式与目录结构
 
 ### M1 — 最小对话回路
 - [x] 封装 DeepSeek 客户端（`src/llm/client.ts`，导出 `createClient` + 模型/URL 常量）
@@ -39,7 +41,8 @@
 ### M4 — 交互式终端体验
 - [x] REPL（持续多轮对话）
 - [x] 维护对话历史
-- [ ] 流式输出（streaming）
+- [x] 流式输出（streaming）
+- [x] 工具调用结果可在终端中展示
 
 ### M5 — 打磨
 - [ ] 设计 system prompt
@@ -59,3 +62,4 @@
 | 2026-05-22 | 包管理器用 npm | Node 自带、教程通用、对小项目足够快 |
 | 2026-05-22 | `npm run dev` 用 `tsx watch` | 直接跑 TS 源码、改动自动重载，免去手动编译 |
 | 2026-05-22 | M1 客户端先内联在 `index.ts` | 学习项目：先看到闭环，重构动机更清楚后再抽 `src/llm/` |
+| 2026-05-22 | 项目名倾向 `tiny-agent` | 表达“小而完整”的学习版 coding agent，更直观亲切 |

@@ -1,6 +1,7 @@
 import type OpenAI from "openai";
 import { DEFAULT_MODEL } from "../llm/client.js";
 import { getTool, toolSpecs } from "../tools/index.js";
+import { SYSTEM_PROMPT } from "./system-prompt.js";
 
 export type AgentMessage = OpenAI.Chat.Completions.ChatCompletionMessageParam;
 
@@ -17,6 +18,12 @@ export async function runAgent(
   onToolResult: (name: string, result: string) => void,
 ): Promise<void> {
   let finalText = "";
+  if (messages.length === 0) {
+    messages.push({
+      role: "system",
+      content: SYSTEM_PROMPT,
+    });
+  }
   while (true) {
     const stream = await client.chat.completions.create({
       model: DEFAULT_MODEL,
@@ -80,10 +87,41 @@ export async function runAgent(
     });
 
     for (const toolCall of toolCalls.values()) {
-      const tool = getTool(toolCall.name);
-      const args = JSON.parse(toolCall.arguments) as Record<string, unknown>;
-      const result = await tool.run(args);
+      let args: Record<string, unknown>;
+      let result: string;
+      let tool;
+      try {
+        tool = getTool(toolCall.name);
+      } catch (error) {
+        const result = error instanceof Error
+          ? `Unknown tool: ${error.message}`
+          : "Unknown tool.";
 
+        messages.push({
+          role: "tool",
+          tool_call_id: toolCall.id,
+          content: result,
+        });
+
+        continue;
+      }
+      try {
+        args = JSON.parse(toolCall.arguments) as Record<string, unknown>;
+      } catch {
+        messages.push({
+          role: "tool",
+          tool_call_id: toolCall.id,
+          content: `Invalid tool arguments JSON: ${toolCall.arguments}`,
+        });
+        continue;
+      }
+      try {
+        result = await tool.run(args);
+      } catch (error) {
+        result = error instanceof Error
+          ? `Tool failed: ${error.message}`
+          : "Tool failed with unknown error.";
+      }
       onToolResult(toolCall.name, result);
 
       messages.push({
