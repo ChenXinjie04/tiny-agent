@@ -1,9 +1,9 @@
 import { readdir } from "node:fs/promises";
-import path from "node:path";
 import type { Tool } from "./types.js";
+import { resolveInsideWorkspace } from "./path-safety.js";
 
 export const listDirTool: Tool = {
-spec: {
+  spec: {
     type: "function",
     function: {
       name: "list_dir",
@@ -21,9 +21,9 @@ spec: {
       },
     },
   },
-async run(args) {
+  async run(args) {
     const dirPath = readStringArg(args, "dirPath");
-    const resolvedPath = path.resolve(process.cwd(), dirPath);
+    const resolvedPath = resolveInsideWorkspace(dirPath);
 
     const entries = await readdir(resolvedPath, { withFileTypes: true });
 

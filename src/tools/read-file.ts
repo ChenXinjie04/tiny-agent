@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import path from "node:path";
+import { resolveInsideWorkspace } from "./path-safety.js";
 import type { Tool } from "./types.js";
 
 export const readFileTool: Tool = {
@@ -23,7 +23,7 @@ export const readFileTool: Tool = {
   },
   async run(args) {
     const filePath = readStringArg(args, "filePath");
-    const resolvedPath = path.resolve(process.cwd(), filePath);
+    const resolvedPath = resolveInsideWorkspace(filePath);
 
     return await readFile(resolvedPath, "utf8");
   },

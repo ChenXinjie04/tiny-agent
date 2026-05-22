@@ -10,12 +10,15 @@ This is a learning project for building a small Codex-like command line assistan
 - Multi-turn conversation history
 - DeepSeek API access through the official `openai` SDK
 - OpenAI-compatible tool calling
+- System prompt for coding-agent behavior
 - Local tools:
   - `list_dir`
   - `read_file`
   - `write_file`
   - `run_shell_command`
 - Streaming model output
+- Tool result display in the terminal
+- Confirmation before writing files or running shell commands
 
 ## Tech Stack
 
@@ -83,5 +86,6 @@ src/
 - The default model should be `deepseek-chat`, because it supports function calling.
 - `deepseek-reasoner` does not support function calling.
 - Shell command execution should stay restricted through an allowlist.
+- `write_file` and `run_shell_command` require user confirmation before execution.
+- Tool failures are returned to the model as tool results so the agent can recover.
 - This project is for learning and experimentation, so the implementation favors clarity over framework-level abstraction.
-

@@ -1,5 +1,5 @@
 import { writeFile } from "node:fs/promises";
-import path from "node:path";
+import { resolveInsideWorkspace } from "./path-safety.js";
 import type { Tool } from "./types.js";
 
 export const writeFileTool: Tool = {
@@ -29,7 +29,7 @@ export const writeFileTool: Tool = {
   async run(args) {
     const filePath = readStringArg(args, "filePath");
     const content = readStringArg(args, "content");
-    const resolvedPath = path.resolve(process.cwd(), filePath);
+    const resolvedPath = resolveInsideWorkspace(filePath);
 
     await writeFile(resolvedPath, content, "utf8");
 

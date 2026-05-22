@@ -16,6 +16,7 @@ export async function runAgent(
   messages: AgentMessage[],
   onText: (text: string) => void,
   onToolResult: (name: string, result: string) => void,
+  shouldConfirmTool: (name: string, args: Record<string, unknown>) => Promise<boolean>,
 ): Promise<void> {
   let finalText = "";
   if (messages.length === 0) {
@@ -115,6 +116,21 @@ export async function runAgent(
         });
         continue;
       }
+
+      const confirmed = await shouldConfirmTool(toolCall.name, args);
+      if (!confirmed) {
+        result = "User denied tool execution.";
+        onToolResult(toolCall.name, result);
+
+        messages.push({
+          role: "tool",
+          tool_call_id: toolCall.id,
+          content: result,
+        });
+
+        continue;
+      }
+
       try {
         result = await tool.run(args);
       } catch (error) {
