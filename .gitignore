@@ -3,6 +3,7 @@ node_modules/
 
 # Build output
 dist/
+eval/runs/
 
 # Environment variables (contains API key, never commit)
 .env
