@@ -59,6 +59,8 @@ Run in development mode:
 npm run dev
 ```
 
+This starts the agent from the current project directory.
+
 Build the project:
 
 ```bash
@@ -69,6 +71,28 @@ Run the built output:
 
 ```bash
 npm start
+```
+
+Link the CLI command locally:
+
+```bash
+npm link
+```
+
+After linking, run the agent from any project directory:
+
+```bash
+tiny-agent
+```
+
+The workspace root is the directory where `tiny-agent` is started. File tools and shell commands are restricted to that directory.
+
+For local evaluation, create a run directory and start the linked CLI there:
+
+```bash
+mkdir -p eval/runs/EVAL-001
+cd eval/runs/EVAL-001
+tiny-agent
 ```
 
 ## Project Structure

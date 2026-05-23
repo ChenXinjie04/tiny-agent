@@ -2,10 +2,14 @@
   "name": "coding-agent",
   "version": "1.0.0",
   "description": "A terminal coding agent written in TypeScript, powered by the DeepSeek API",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "bin": {
+    "tiny-agent": "dist/index.js"
+  },
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc",
+    "postbuild": "chmod +x dist/index.js",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

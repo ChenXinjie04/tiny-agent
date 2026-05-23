@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import "dotenv/config";
 import readline from "node:readline/promises";
 import { readFile } from "node:fs/promises";

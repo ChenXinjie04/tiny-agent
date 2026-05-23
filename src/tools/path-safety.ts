@@ -1,5 +1,11 @@
 import path from "node:path";
 
+const workspaceRoot = process.cwd();
+
+export function getWorkspaceRoot(): string {
+  return workspaceRoot;
+}
+
 export function resolveInsideWorkspace(inputPath: string): string {
   const workspaceRoot = process.cwd();
   const resolvedPath = path.resolve(workspaceRoot, inputPath);

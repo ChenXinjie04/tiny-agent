@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { resolveInsideWorkspace } from "./path-safety.js";
+import { getWorkspaceRoot, resolveInsideWorkspace } from "./path-safety.js";
 import type { Tool } from "./types.js";
 
 const BLOCKED_COMMANDS = new Set([
@@ -50,7 +50,7 @@ export const runShellCommandTool: Tool = {
 
     validateShellCommand(command, commandArgs);
     const { stdout, stderr } = await execFileAsync(command, commandArgs, {
-      cwd: process.cwd(),
+      cwd: getWorkspaceRoot(),
     });
 
     return [stdout, stderr].filter(Boolean).join("\n");
